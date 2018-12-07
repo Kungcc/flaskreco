@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+{% endblock %}}
+
+{% block main %}
+    {#
+        {{ form.autocomp.label }}: {{ form.autocomp }}
+        {{ movie.movieTitle.label }}: {{ movie.movieTitle }}
+    #}
+
+    <h2> MovieTitle Autocomplete</h2>
+
+    <form id="movieSearch" class="form" method="post" action="/movie">
+        <div class="form-group">
+            <input name="movieTitle" id="movieTitle" type="text" placeholder="{{ movieTitle }}" class="ui-autocomplete-input form-control" >
+            <input name="movieVal" id="movieVal" type='hidden'>
+        </div>
+    </form>
+
+    <br><br>
+
+    <h3>Selected Movie</h3>
+    Title:  <b>{{ movieTitle }}</b><br>    
+    tmdbId: <b>{{ movieVal }}</b>
+
+    <hr>
+
+    <h3>Recommendations</h3>
+    <!-- Recommendations Results -->
+
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        $.ajax({
+            url: '{{ url_for("movielens.autocomplete") }}'
+            }).done(function (data){
+                $('#city_autocomplete').autocomplete({
+                    source: data,
+                    minLength: 2
+                });
+            });
+        });
+</script>
+
+
+<script type="text/javascript">
+    $(function() {
+        $("#movieTitle").autocomplete({
+            source: function(request, response) {
+                $.getJSON("{{ url_for('movielens.search_title') }}",{
+                    q: request.term, // in flask, "q" will be the argument to look for using request.args
+                }, function(data) {
+                    response(data); // matching_results from jsonify
+                    // console.log(data);
+                });
+            },
+            minLength: 1,
+            select: function(event, ui) {
+                $("#movieTitle").val(ui.item.label); //ui.item is your object from the array
+                $("#movieVal").val(ui.item.value); //ui.item is your object from the array
+                $("#movieSearch").submit();
+                console.log(ui.item.value);
+                return false;
+            }
+        });
+    })
+</script>
+
+
+{% endblock %}}
+
+
