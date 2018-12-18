@@ -19,9 +19,9 @@ def page(path):
 
 ## pygments css register ##
 from flask_flatpages import pygments_style_defs
-@bp.route('/pygments.css')
+@bp.route('pygments.css')
 def pygments_css():
-    return pygments_style_defs('friendly'), 200, {'Content-Type': 'text/css'}
+    return pygments_style_defs(style='colorful'), 200, {'Content-Type': 'text/css'}
 
 ####################################
 

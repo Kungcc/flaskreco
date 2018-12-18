@@ -11,7 +11,14 @@
         {{ movie.movieTitle.label }}: {{ movie.movieTitle }}
     #}
 
-    <h2> MovieTitle Autocomplete</h2>
+    <!-- High Rating -->
+    <h2> High Rating Movies (熱門推薦)</h2>
+     {{ hr_html | safe}} <br>
+    
+    
+    <br><br>
+    <!-- MovieTitle Autocomplete -->
+    <h2> MovieTitle Autocomplete </h2>
 
     <form id="movieSearch" class="form" method="post" action="/movie">
         <div class="form-group">
@@ -21,17 +28,40 @@
     </form>
 
     <br><br>
-
+    
+    {% if movieTitle %}
     <h3>Selected Movie</h3>
-    Title:  <b>{{ movieTitle }}</b><br>    
-    tmdbId: <b>{{ movieVal }}</b>
+    Title:  <b>{{ movieTitle }}</b><br>
+    movieId: <b>{{ movieVal }}</b>
 
-    <hr>
-
-    <h3>Recommendations</h3>
+    <br><br>
+    <h3>Recommendations (相似電影推薦)</h3>
     <!-- Recommendations Results -->
+    {{ html | safe}} <br><br>
+    {{ csim_html | safe}} <br>
+    
+    {% endif %}
+    
+    
+    <br><br>
+    <!-- userId form -->
+    <h2> Personal Recommendations (個人化相似電影推薦)</h2>
 
-
+        <form id="userId" class="form" method="post" action="/movie">
+            <div class="form-group">
+                <input name="userId" id="userId" type="text" placeholder="{{ userId }}" class="ui-autocomplete-input form-control" type='hidden'>
+            </div>
+    </form>
+    
+    <br><br>
+    
+    {% if userId %}
+    <!-- Recommendations Results -->
+    {{ html | safe}} <br>
+    
+    {% endif %}
+    
+    
 {% endblock %}
 
 
@@ -42,27 +72,13 @@
 
 <script type="text/javascript">
     $(function() {
-        $.ajax({
-            url: '{{ url_for("movielens.autocomplete") }}'
-            }).done(function (data){
-                $('#city_autocomplete').autocomplete({
-                    source: data,
-                    minLength: 2
-                });
-            });
-        });
-</script>
-
-
-<script type="text/javascript">
-    $(function() {
         $("#movieTitle").autocomplete({
             source: function(request, response) {
                 $.getJSON("{{ url_for('movielens.search_title') }}",{
                     q: request.term, // in flask, "q" will be the argument to look for using request.args
                 }, function(data) {
                     response(data); // matching_results from jsonify
-                    // console.log(data);
+                    console.log(data);
                 });
             },
             minLength: 1,
