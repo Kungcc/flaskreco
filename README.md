@@ -1,10 +1,14 @@
-# flask_movielens
+# Movie Recommenderation
 
-Flask Web Service - Movie Recommendation
+- Spark + Elasticsearch + Flask/gunicorn + nginx
+    - auto-complete movie search with Elasticsearch
+    - recommendation model
+        - content-based recommendation 
+        - user-item based recommendation
 
-### virtualenv
-```
-virtualenv env
-source env/bin/activate
-pip install -r requirements.txt
-```
+- Installation
+    - run: `docker-compose -d up`
+    - import data & model: `docker-compose -y data_init.yml`
+    - http://localhost/index
+  
+

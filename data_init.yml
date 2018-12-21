@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+# docker run --rm -ti -v ${PWD}:/data taskrabbit/elasticsearch-dump --input=data/data.json --output=http://elastic:changeme@10.10.114.125:9200/ --output-index=demo --type=data
+  dump:
+    image: taskrabbit/elasticsearch-dump
+    container_name: dump_to_elastic
+    restart: "no"
+    networks:
+      static-network:
+        ipv4_address: 10.10.0.9
+    volumes:
+      -  ./elasticdump:/data 
+    command: elasticsearch-dump --input=data/data.json --output=http://elastic:changeme@10.10.0.7:9200/ --output-index=demo --type=data
+
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 10.10.0.0/16

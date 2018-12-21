@@ -1,0 +1,21 @@
+# VENV
+env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyc
+
+# VSCODE temp files
+.vscode
+
+# flask-migration
+migrations/
+
+# logs
+*.log
+log/
+logs/
+
+# uploads
+# *.csv

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+{% endblock %}}
+
+{% block main %}
+    {#
+        {{ form.autocomp.label }}: {{ form.autocomp }}
+        {{ movie.movieTitle.label }}: {{ movie.movieTitle }}
+    #}
+
+    <!-- High Rating -->
+    <h2> High Rating Movies (熱門推薦)</h2>
+     {{ hr_html | safe}} <br>
+    
+    
+    <br><br>
+    <!-- MovieTitle Autocomplete -->
+    <h2> MovieTitle Autocomplete </h2>
+
+    <form id="movieSearch" class="form" method="post" action="/movie">
+        <div class="form-group">
+            <input name="movieTitle" id="movieTitle" type="text" placeholder="{{ movieTitle }}" class="ui-autocomplete-input form-control" >
+            <input name="movieVal" id="movieVal" type='hidden'>
+        </div>
+    </form>
+
+    <br><br>
+    
+    {% if movieTitle %}
+    <h3>Selected Movie</h3>
+    Title:  <b>{{ movieTitle }}</b><br>
+    movieId: <b>{{ movieVal }}</b>
+
+    <br><br>
+    <h3>Recommendations (相似電影推薦)</h3>
+    <!-- Recommendations Results -->
+    {{ html | safe}} <br><br>
+    {{ csim_html | safe}} <br>
+    
+    {% endif %}
+    
+    
+    <br><br>
+    <!-- userId form -->
+    <h2> Personal Recommendations (個人化相似電影推薦)</h2>
+
+        <form id="userId" class="form" method="post" action="/movie">
+            <div class="form-group">
+                <input name="userId" id="userId" type="text" placeholder="{{ userId }}" class="ui-autocomplete-input form-control" type='hidden'>
+            </div>
+    </form>
+    
+    <br><br>
+    
+    {% if userId %}
+    <!-- Recommendations Results -->
+    {{ html | safe}} <br>
+    
+    {% endif %}
+    
+    
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        $("#movieTitle").autocomplete({
+            source: function(request, response) {
+                $.getJSON("{{ url_for('movielens.search_title') }}",{
+                    q: request.term, // in flask, "q" will be the argument to look for using request.args
+                }, function(data) {
+                    response(data); // matching_results from jsonify
+                    console.log(data);
+                });
+            },
+            minLength: 1,
+            select: function(event, ui) {
+                $("#movieTitle").val(ui.item.label); //ui.item is your object from the array
+                $("#movieVal").val(ui.item.value); //ui.item is your object from the array
+                $("#movieSearch").submit();
+                console.log(ui.item.value);
+                return false;
+            }
+        });
+    })
+</script>
+
+
+{% endblock %}}
+
+

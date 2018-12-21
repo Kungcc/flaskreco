@@ -1,0 +1,73 @@
+version: '3'
+
+services:
+
+  flaskreco:
+    container_name: flaskreco
+    restart: always
+    build: ./flaskreco
+    networks:
+      static-network:
+        ipv4_address: 10.10.0.5    
+    ports:
+      - 8000:8000
+    command: gunicorn -w 2 -b :8000 wsgi:app
+
+
+  nginx:
+    container_name: flaskreco_nginx
+    restart: always
+    build: ./nginx
+    networks:
+      static-network:
+        ipv4_address: 10.10.0.6
+    ports:
+      - 80:80
+    depends_on:
+      - flaskreco
+
+
+  elasticsearch:
+    container_name: flask_elastic
+    restart: always
+    build: ./elastic
+    networks:
+      static-network:
+        ipv4_address: 10.10.0.7
+    ports:
+      - 9200:9200
+    depends_on:
+      - flaskreco    
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    # volumes:
+    #   -  d:/Users/004317/Desktop/docker_vol/esdata1:/usr/share/elasticsearch/data
+
+# docker run --rm -ti -v ${PWD}:/data taskrabbit/elasticsearch-dump --input=data/data.json --output=http://elastic:changeme@10.10.114.125:9200/ --output-index=demo --type=data
+  # dump:
+  #   image: taskrabbit/elasticsearch-dump
+  #   container_name: dump_to_elastic
+  #   restart: "no"
+  #   networks:
+  #     static-network:
+  #       ipv4_address: 10.10.0.9
+  #   depends_on:
+  #     - elasticsearch
+  #   volumes:
+  #     -  ./elasticdump:/data 
+  #   command: elasticsearch-dump --input=data/data.json --output=http://elastic:changeme@10.10.0.7:9200/ --output-index=demo --type=data
+
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 10.10.0.0/16

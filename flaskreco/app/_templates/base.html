@@ -1,0 +1,53 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/{{ config.THEME }}/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('main.pygments_css') }}">
+{% endblock %}
+
+
+{% block title %}
+    {% if title %}{{ title }} - Flaskeg{% else %}Welcome to Flaskeg{% endif %}
+{% endblock %}
+
+
+{% block navbar %}
+    {% include "_sub/nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <main role="main">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- application content needs to be provided in the body block -->
+        {% block main %}
+        {% endblock %}        
+
+        </main>
+    </div>
+
+    {% include "_sub/footer.html" %}
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/jquery-2.1.1.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+{% endblock %}
